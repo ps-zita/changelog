@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Changelog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #f7f8fa;
+      --surface: #fff;
+      --primary: #0071e3;
+      --primary-dark: #005bb5;
+      --text: #1a1a1a;
+      --muted: #6e6e73;
+      --border: #e0e0e5;
+      --shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
+      --radius: 18px;
+      --gradient: linear-gradient(90deg, #f7f8fa 0%, #e3e9f2 100%);
+    }
+    body.dark-mode {
+      --background: #181a1b;
+      --surface: #232526;
+      --primary: #2997ff;
+      --primary-dark: #1570ef;
+      --text: #f5f6fa;
+      --muted: #b0b3b8;
+      --border: #33363a;
+      --shadow: 0 4px 24px 0 rgba(0,0,0,0.25);
+      --gradient: linear-gradient(90deg, #232526 0%, #181a1b 100%);
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--gradient);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 16px 48px 16px;
+    }
+    .header {
+      width: 100%;
+      max-width: 700px;
+      margin: 48px 0 32px 0;
+      text-align: center;
+      position: relative;
+    }
+    .header-actions {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      height: 40px;
+    }
+    .darkmode-switch {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+      user-select: none;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 26px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--border);
+      transition: background 0.3s;
+      border-radius: 16px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--surface);
+      transition: transform 0.3s, background 0.3s;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    input:checked + .slider {
+      background: var(--primary);
+    }
+    input:checked + .slider:before {
+      transform: translateX(18px);
+      background: var(--primary-dark);
+    }
+    .switch .icon {
+      position: absolute;
+      top: 3px;
+      width: 20px;
+      height: 20px;
+      font-size: 1.1em;
+      pointer-events: none;
+      color: var(--muted);
+      transition: color 0.3s;
+    }
+    .switch .icon.sun {
+      left: 4px;
+    }
+    .switch .icon.moon {
+      right: 4px;
+    }
+    input:checked ~ .icon.sun {
+      color: var(--primary-dark);
+    }
+    input:not(:checked) ~ .icon.moon {
+      color: var(--primary-dark);
+    }
+    .header h1 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      margin: 0 0 8px 0;
+      letter-spacing: -1px;
+    }
+    .header p {
+      color: var(--muted);
+      font-size: 1.2rem;
+      margin: 0;
+      font-weight: 400;
+    }
+    .changelog-container {
+      width: 96vw;
+      max-width: 700px;
+      min-width: 320px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px 32px 16px 32px;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .changelog-entry {
+      position: relative;
+      padding-left: 32px;
+      padding-right: 12px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .changelog-entry::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 20%;
+      height: 60%;
+      width: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+      display: block;
+    }
+    .changelog-entry:hover {
+      box-shadow: 0 2px 12px 0 rgba(0,113,227,0.08);
+      background: linear-gradient(90deg, #f7f8fa 0%, #f0f4fa 100%);
+    }
+    .changelog-date {
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+    .changelog-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 6px 0;
+      color: var(--primary-dark);
+    }
+    .changelog-details {
+      font-size: 1.05rem;
+      color: var(--text);
+      margin: 0 0 8px 0;
+      line-height: 1.6;
+    }
+    .changelog-tags {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .changelog-tag {
+      background: #e3e9f2;
+      color: var(--primary-dark);
+      font-size: 0.85rem;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      user-select: none;
+    }
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-backdrop.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      padding: 32px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    .modal-backdrop.show .modal-content {
+      transform: scale(1);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 0;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--muted);
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+      line-height: 1;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .modal-close:hover {
+      background: #f0f0f0;
+    }
+    .modal-date {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+    .modal-details {
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .modal-changes {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 4px solid var(--primary);
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .modal-changes h3 {
+      margin: 0 0 16px 0;
+      color: var(--primary-dark);
+      font-size: 1.1rem;
+    }
+    .modal-changes ul {
+      margin: 0;
+      padding-left: 1.2em;
+    }
+    .modal-changes li {
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    @media (max-width: 800px) {
+      .header, .changelog-container {
+        max-width: 98vw;
+        width: 98vw;
+        min-width: unset;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+    }
+    @media (max-width: 600px), (max-aspect-ratio: 1/1) {
+      .changelog-container {
+        width: 98vw;
+        max-width: 95vw;
+        min-width: unset;
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+      .changelog-entry::before {
+        left: 1px;
+      }
+      .header-actions {
+        position: static;
+        justify-content: flex-end;
+        margin-bottom: 8px;
+        height: auto;
+      }
+      .darkmode-switch {
+        font-size: 0.95rem;
+      }
+      .switch {
+        width: 38px;
+        height: 22px;
+      }
+      .slider:before {
+        height: 16px;
+        width: 16px;
+        left: 2px;
+        bottom: 2px;
+      }
+      .switch .icon {
+        font-size: 1em;
+        width: 16px;
+        height: 16px;
+        top: 2px;
+      }
+      .switch .icon.sun {
+        left: 2px;
+      }
+      .switch .icon.moon {
+        right: 2px;
+      }
+    }
+    @media (max-width: 500px) {
+      .header h1 {
+        font-size: 1.8rem;
+      }
+      .header p {
+        font-size: 0.9rem;
+      }
+      .changelog-container {
+        padding: 12px 4px 8px 4px;
+      }
+      .changelog-entry {
+        padding-left: 16px;
+        padding-right: 12px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        margin-bottom: 16px;
+      }
+      .changelog-date {
+        font-size: 0.8rem;
+      }
+      .changelog-title {
+        font-size: 1.1rem;
+      }
+      .changelog-details {
+        font-size: 0.9rem;
+      }
+      .changelog-tag {
+        font-size: 0.75rem;
+        padding: 1px 8px;
+      }
+      .modal-content {
+        padding: 16px;
+        width: 95%;
+        margin: 16px;
+      }
+      .modal-title {
+        font-size: 1.2rem;
+      }
+      .modal-close {
+        width: 24px;
+        height: 24px;
+        font-size: 1.1rem;
+        line-height: 1;
+      }
+      .modal-date {
+        font-size: 0.8rem;
+      }
+      .modal-details {
+        font-size: 0.9rem;
+      }
+      .modal-changes {
+        padding: 16px;
+        margin-left: 8px;
+        margin-right: 8px;
+      }
+      .modal-changes h3 {
+        font-size: 1rem;
+      }
+      .modal-changes li {
+        font-size: 0.9rem;
+      }
+    }
+    body.dark-mode .modal-content {
+      background: #232526;
+      color: #f5f6fa;
+    }
+    body.dark-mode .modal-changes {
+      background: #181a1b;
+      color: #f5f6fa;
+      border-left: 4px solid #2997ff;
+    }
+    body.dark-mode .modal-changes h3 {
+      color: #2997ff;
+    }
+    body.dark-mode .modal-changes li {
+      color: #f5f6fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-actions">
+      <label class="darkmode-switch" for="darkModeSwitch">
+        <span class="switch">
+          <input type="checkbox" id="darkModeSwitch" aria-label="Toggle dark mode">
+          <span class="slider"></span>
+          <span class="icon sun">☀️</span>
+          <span class="icon moon">🌙</span>
+        </span>
+      </label>
+    </div>
+    <h1>ministrysoft changelog</h1>
+    <p>Stay up to date with the latest updates, improvements, and fixes.</p>
+  </div>
+  <div class="changelog-container">
+    <div class="changelog-entry" id="main-changelog">
+      <div class="changelog-date">2025-07-07</div>
+      <div class="changelog-title">Platform enhancements & new integrations</div>
+      <div class="changelog-details">
+        This release brings a range of improvements and new integrations designed to streamline your workflow, enhance security and improve performance.
+      </div>
+      <div class="changelog-tags">
+        <span class="changelog-tag">frontend</span>
+        <span class="changelog-tag">backend</span>
+        <span class="changelog-tag">clientside</span>
+        <span class="changelog-tag">businessside</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Platform enhancements & new integrations</h2>
+        <button class="modal-close" id="closeModal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-date">2025-07-07</div>
+      <div class="modal-details">
+        This update brings improvements across the platform, including new booking options, better payment flexibility, and infrastructure changes for a smoother experience.
+      </div>
+      <div class="modal-changes">
+        <h3>What's new in this release</h3>
+        <ul>
+          <li>Booking metadata now includes payment and additional services for improved invoicing and client display.</li>
+          <li>"Book now, pay later" option is now available for more flexible payments.</li>
+          <li>Booking failure protection added for a more reliable experience.</li>
+          <li>SMS API was moved from the frontend to the backend for better reliability and maintainability.</li>
+          <li>Square API integration improved for payment processing.</li>
+          <li>General security and performance improvements, plus various bugfixes.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const entry = document.getElementById('main-changelog');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+
+    entry.addEventListener('click', function() {
+      modal.classList.add('show');
+    });
+
+    closeModal.addEventListener('click', function() {
+      modal.classList.remove('show');
+    });
+
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.remove('show');
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('show')) {
+        modal.classList.remove('show');
+      }
+    });
+
+    // Dark mode switch logic
+    const darkModeSwitch = document.getElementById('darkModeSwitch');
+    function setDarkMode(on) {
+      if (on) {
+        document.body.classList.add('dark-mode');
+        darkModeSwitch.checked = true;
+      } else {
+        document.body.classList.remove('dark-mode');
+        darkModeSwitch.checked = false;
+      }
+    }
+    // Load preference
+    const darkPref = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(darkPref);
+    darkModeSwitch.addEventListener('change', () => {
+      setDarkMode(darkModeSwitch.checked);
+      localStorage.setItem('darkMode', darkModeSwitch.checked);
+    });
+  </script>
+</body>
+</html> 
